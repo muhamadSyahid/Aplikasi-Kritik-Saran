@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model kategori {
+  id        Int      @id @default(autoincrement())
+  Nama      String   @unique(map: "Nama_UNIQUE") @db.VarChar(45)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tipe      tipe[]
+}
+
+model krisar {
+  id        Int      @id @default(autoincrement())
+  id_tipe   Int
+  kritik    String?  @db.Text
+  saran     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tipe      tipe     @relation(fields: [id_tipe], references: [id], onDelete: Cascade, map: "id_tipe")
+
+  @@index([id_tipe], map: "id_tipe_idx")
+}
+
+model tipe {
+  id          Int      @id @default(autoincrement())
+  nama_tipe   String   @unique(map: "nama_tipe_UNIQUE") @db.VarChar(45)
+  id_kategori Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  krisar      krisar[]
+  kategori    kategori @relation(fields: [id_kategori], references: [id], onDelete: Cascade, map: "id_kategori1")
+
+  @@index([id_kategori], map: "id_kategori_idx")
+}
+
+model user {
+  id        Int      @id @default(autoincrement())
+  nama      String   @db.VarChar(45)
+  username  String   @unique(map: "username_UNIQUE") @db.VarChar(45)
+  email     String   @unique(map: "email_UNIQUE") @db.VarChar(45)
+  password  String?  @db.VarChar(125)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
